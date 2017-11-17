@@ -69,9 +69,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;D:\OpenglFiles\glfw-3.2.1\build_vs\src\Debug\;d:\OpenglFiles\glew-2.0.0\lib\Release\Win32\</LibraryPath>
-    <SourcePath>$(VC_SourcePath)D:\OpenglFiles\glfw-3.2.1\include\;d:\OpenglFiles\glew-2.0.0\include\</SourcePath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\OpenglFiles\glfw-3.2.1\include\;d:\OpenglFiles\glew-2.0.0\include\</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;D:\project\OpenglFiles\glfw-3.2.1\build_vs\src\Debug\;d:\project\OpenglFiles\glew-2.0.0\lib\Release\Win32\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\lib\;d:\project\OpenglFiles\project_vs\assimp\lib</LibraryPath>
+    <SourcePath>$(VC_SourcePath)D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\GL;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <SourcePath>$(VC_SourcePath);D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\GL;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include</SourcePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;D:\project\OpenglFiles\glfw-3.2.1\build_vs\src\Debug\;d:\project\OpenglFiles\glew-2.0.0\lib\Release\Win32\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\lib\;d:\project\OpenglFiles\project_vs\assimp\lib</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\project\OpenglFiles\glfw-3.2.1\build_vs\src\Debug\;d:\project\OpenglFiles\glew-2.0.0\lib\Release\Win32\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\lib\;d:\project\OpenglFiles\project_vs\assimp\lib</LibraryPath>
+    <SourcePath>$(VC_SourcePath);D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\GL;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,7 +90,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;SOIL.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,10 +107,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;SOIL.lib;assimp-vc140-mt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -114,10 +126,15 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;SOIL.lib;assimp-vc140-mt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tutorial1.2.rc" />

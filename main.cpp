@@ -1,193 +1,402 @@
-#include <iostream>
-
 // GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-// GLFW
 #include <GLFW/glfw3.h>
 
-// Function prototypes
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-// Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
+#include "../../../glm/glm/glm.hpp"
+#include <../../../glm/glm/gtc/matrix_transform.hpp>
+#include <../../../glm/glm/gtc/type_ptr.hpp>
 
-// Shaders
-const GLchar* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 position;\n"
-"void main()\n"
-"{\n"
-"gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-"}\0";
-const GLchar* fragmentShaderSource = "#version 330 core\n"
-"out vec4 color;\n"
-"void main()\n"
-"{\n"
-"color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n\0";
+#include "Shader.h"
+#include "Camera.h"
+#include "Model.h"
 
-const GLchar* fragmentShaderSource1 = "#version 330 core\n"
-"out vec4 color;\n"
-"void main()\n"
-"{\n"
-"color = vec4(0.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n\0";
+#include <iostream>
+#include <stdio.h> 
+#include <direct.h>
+#include <string>
 
-// The MAIN function, from here we start the application and run the game loop
+
+//linker-imput
+//glfw3.lib;opengl32.lib;glew32s.lib;SOIL.lib;assimp-vc140-mt.lib
+/*
+include
+D:\project\OpenglFiles\glfw-3.2.1\include\
+d:\project\OpenglFiles\glew-2.0.0\include\
+D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\
+d:\project\OpenglFiles\project_vs\assimp\include
+//D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include
+library
+D:\project\OpenglFiles\glfw-3.2.1\build_vs\src\Debug\
+d:\project\OpenglFiles\glew-2.0.0\lib\Release\Win32\
+D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\lib\
+d:\project\OpenglFiles\project_vs\assimp\lib
+//D:\project\OpenglFiles\glfw-3.2.1\build_vs\src\Debug\;d:\project\OpenglFiles\glew-2.0.0\lib\Release\Win32\;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\lib\;d:\project\OpenglFiles\project_vs\assimp\lib
+source directories
+D:\project\OpenglFiles\glfw-3.2.1\include\;d:\project\OpenglFiles\glew-2.0.0\include\GL;D:\project\OpenglFiles\project_vs\Simple OpenGL Image Library\src\;d:\project\OpenglFiles\project_vs\assimp\include
+*/
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void processInput(GLFWwindow *window);
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+// camera
+Camera camera(glm::vec3(0.0f, 000.0f, 1000.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
+bool firstMouse = true;
+
+// timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+
+
 int main()
 {
-	// Init GLFW
+	// glfw: initialize and configure
+	// ------------------------------
 	glfwInit();
-	// Set all the required options for GLFW
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
+
+														 // glfw window creation
+														 // --------------------
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Solar system", NULL, NULL);
+	if (window == NULL)
+	{
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
-	// Set the required callback functions
-	glfwSetKeyCallback(window, key_callback);
+	// tell GLFW to capture our mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// glad: load all OpenGL function pointers
+	// ---------------------------------------
+	/*if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}*/
+
+	// configure global opengl state
+	// -----------------------------
+	glEnable(GL_DEPTH_TEST);
 
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
-	glewInit();
-
-	// Define the viewport dimensions
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
-
-
-	// Build and compile our shader program
-	// Vertex shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	// Check for compile time errors
-	GLint success;
-	GLchar infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
+	if (glewInit() != GLEW_OK)
 	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "Failed to initialize GLEW" << std::endl;
+		return -1;
 	}
-	// Fragment shader
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	// Fragment shader1
-	GLuint fragmentShader1 = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader1, 1, &fragmentShaderSource1, NULL);
-	glCompileShader(fragmentShader1);
-	// Check for compile time errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+
+
+	// build and compile shaders
+	// ------------F-------------
+	Shader shaderOrb("model.v", "model.f");
+	Shader shaderPlanets("modelTex.v", "modelTex.f");
+
+	// load models
+	// -----------
+
+
+	char current_work_dir[FILENAME_MAX];
+	char b = *"\\";
+	_getcwd(current_work_dir, sizeof(current_work_dir));
+	for (int i = 0; i < sizeof(current_work_dir); i++) {
+		if (current_work_dir[i] == b)
+			current_work_dir[i] = '/';
 	}
-	// Link shaders
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	//
-	GLuint shaderProgram1 = glCreateProgram();
-	glAttachShader(shaderProgram1, vertexShader);
-	glAttachShader(shaderProgram1, fragmentShader1);
-	glLinkProgram(shaderProgram1);
+	string path = current_work_dir;
+	Model modelFone( path + "/model/foneCube/foneCube.obj");
+	Model modelOrb(path + "/model/orbits/orbits.obj");
+	Model modelSun(path + "/model/sun/sun.obj");
+	Model modelMercur(path + "/model/mercury/mercury.obj");
+	Model modelVenera(path + "/model/venera/venera.obj");
+	Model modelTerra(path + "/model/terra/terra.obj");
+	Model modelMars(path + "/model/mars/mars.obj");
+	Model modelYpiter(path + "/model/ypiter/ypiter.obj");
+	Model modelSaturn(path + "/model/saturn/saturn.obj");
+	Model modelYran(path + "/model/yran/yran.obj");
+	Model modelNeptun(path + "/model/neptun/neptun.obj");
 
-	// Check for linking errors
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glDeleteShader(fragmentShader1);
 
-	// Set up vertex data (and buffer(s)) and attribute pointers
-	// We add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
-	GLfloat firsTriangle[] = {
-		// First triangle
-		-0.9f, -0.5f, 0.0f,  // Left 
-		-0.0f, -0.5f, 0.0f,  // Right
-		-0.45f, 0.5f, 0.0f  // Top 
-	};
+	// draw in wireframe
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-							 // Second triangle
-		GLfloat seconfTriangle[] ={
-							 0.0f, -0.5f, 0.0f,  // Left
-							 0.9f, -0.5f, 0.0f,  // Right
-							 0.45f, 0.5f, 0.0f   // Top 
-	};
-	GLuint VBO[2], VAO[2];
-	glGenVertexArrays(2, VAO);
-	glGenBuffers(2, VBO);
-	// 1
-	glBindVertexArray(VAO[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firsTriangle), firsTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
-	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
-	
-						  // второй треугольник
-	// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
-	glBindVertexArray(VAO[1]);
+	// render loop
+	// -----------
+	float time = (GLfloat)glfwGetTime();
+	float timeMerc = 0;
+	float timeVenera = 0;
+	float timeTerra = 0;
+	float timeMars = 0;
+	float timeYpiter = 0;
+	float timeSaturn = 0;
+	float timeYran = 0;
+	float timeNeptun = 0;
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(seconfTriangle), seconfTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	//	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
-	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
-
-						  // Game loop
 	while (!glfwWindowShouldClose(window))
 	{
-		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
-		glfwPollEvents();
+		
+		//Задание скоростей вращения вокруг солнца
+		timeMerc = timeMerc + 0.001;
+		timeVenera = timeVenera + 0.000729;
+		timeTerra = timeTerra + 0.0006;
+		timeMars = timeMars + 0.0005;
+		timeYpiter = timeYpiter + 0.00027;
+		timeSaturn = timeSaturn + 0.0002;
+		timeYran = timeYran + 0.000145;
+		timeNeptun = timeNeptun + 0.0001;
+		// per-frame time logic
+		// --------------------
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-		// Render
-		// Clear the colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// input
+		// -----
+		processInput(window);
 
-		// Draw our first triangle
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 3); // We set the count to 6 since we're drawing 6 vertices now (2 triangles); not 3!
-		glBindVertexArray(0);
+		// render
+		// ------
+		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Draw our second triangle
-		glUseProgram(shaderProgram1);
-		glBindVertexArray(VAO[1]);
-		glDrawArrays(GL_TRIANGLES, 0, 3); // We set the count to 6 since we're drawing 6 vertices now (2 triangles); not 3!
-		glBindVertexArray(0);
+		// don't forget to enable shader before setting uniforms
+		shaderOrb.use();
 
-		// Swap the screen buffers
+		// view/projection transformations
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 20000.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		shaderOrb.setMat4("projection", projection);
+		shaderOrb.setMat4("view", view);
+
+		// render the loaded model
+		//glm::mat4 model;
+		//model = glm::translate(model, glm::vec3(0.0f, -300.0f, 0.0f)); // translate it down so it's at the center of the scene
+		//model = glm::rotate(model, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		//model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+		//ourShader.setMat4("model", model);
+		//ourModel.Draw(ourShader);
+
+
+		glm::mat4 model1;
+		model1 = glm::translate(model1, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		//model1 = glm::rotate(model1, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		//model1 = glm::scale(model1, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+		shaderOrb.setMat4("model", model1);
+		modelOrb.Draw(shaderOrb);
+		//
+		//planets------------------
+		//
+		shaderPlanets.use();
+
+		//sun
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 sun;
+		sun = glm::translate(sun, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		sun = glm::rotate(sun, (GLfloat)glfwGetTime()* 0.1f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", sun);
+		modelSun.Draw(shaderPlanets);
+		//mercur
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 mercur;
+		float x, y;
+		time = time + timeMerc;
+		
+		x = 50 * cos(time);
+		y = 50 * sin(time);
+		time = time - timeMerc;
+		mercur = glm::translate(mercur, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		mercur = glm::rotate(mercur, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", mercur);
+		modelMercur.Draw(shaderPlanets);
+		//venera
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 venera;
+		time = time + timeVenera;
+		x = 110 * cos(time);
+		y = 110 * sin(time);
+		time = time - timeVenera;
+		venera = glm::translate(venera, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		venera = glm::rotate(venera, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", venera);
+		modelVenera.Draw(shaderPlanets);
+		//Terra
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 terra;
+		time = time + timeTerra;
+		x = 200 * cos(time);
+		y = 200 * sin(time);
+		time = time - timeTerra;
+		terra = glm::translate(terra, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		terra = glm::rotate(terra, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", terra);
+		modelTerra.Draw(shaderPlanets);
+		
+		
+		
+		//Mars
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 mars;
+		time = time + timeMars;
+		x = 290 * cos(time);
+		y = 290 * sin(time);
+		time = time - timeMars;
+		mars = glm::translate(mars, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		mars = glm::rotate(mars, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", mars);
+		modelMars.Draw(shaderPlanets);
+		//Ypiter
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 ypiter;
+		time = time + timeYpiter;
+		x = 500 * cos(time);
+		y = 500 * sin(time);
+		time = time - timeYpiter;
+		ypiter = glm::translate(ypiter, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		ypiter = glm::rotate(ypiter, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", ypiter);
+		modelYpiter.Draw(shaderPlanets);
+		//Saturn
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 Saturn;
+		time = time + timeSaturn;
+		x = 700 * cos(time);
+		y = 700 * sin(time);
+		time = time - timeSaturn;
+		Saturn = glm::translate(Saturn, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		Saturn = glm::rotate(Saturn, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", Saturn);
+		modelSaturn.Draw(shaderPlanets);
+		//Yran
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 Yran;
+		time = time + timeYran;
+		x = 900 * cos(time);
+		y = 900 * sin(time);
+		time = time - timeYran;
+		Yran = glm::translate(Yran, glm::vec3(x, y, 0.0f)); // translate it down so it's at the center of the scene
+		Yran = glm::rotate(Yran, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", Yran);
+		modelYran.Draw(shaderPlanets);
+		//Neptun
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 Neptun;
+		time = time + timeNeptun;
+		x = 1100 * cos(time);
+		y = 1100 * sin(time);
+		time = time - timeNeptun;
+		Neptun = glm::translate(Neptun, glm::vec3(x,y, 0.0f)); // translate it down so it's at the center of the scene
+		Neptun = glm::rotate(Neptun, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", Neptun);
+		modelNeptun.Draw(shaderPlanets);
+		
+		time = time + 0.001;
+		//Fone
+		//projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 6000.0f);
+		//view = camera.GetViewMatrix();
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 fone;
+		fone = glm::translate(fone, glm::vec3(0.0f, 0, 0.0f)); // translate it down so it's at the center of the scene
+		fone = glm::rotate(fone, (GLfloat)glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+		shaderPlanets.setMat4("model", fone);
+		modelFone.Draw(shaderPlanets);
+		
+
+		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
-	// Properly de-allocate all resources once they've outlived their purpose
-	glDeleteVertexArrays(2, VAO);
-	glDeleteBuffers(2, VBO);
-	// Terminate GLFW, clearing any resources allocated by GLFW.
+
+	// glfw: terminate, clearing all previously allocated GLFW resources.
+	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
 }
 
-// Is called whenever a key is pressed/released via GLFW
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, deltaTime+5);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, deltaTime+5);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime+5);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime+5);
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// make sure the viewport matches the new window dimensions; note that width and 
+	// height will be significantly larger than specified on retina displays.
+	glViewport(0, 0, width, height);
+}
+
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+	lastX = xpos;
+	lastY = ypos;
+
+	camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.ProcessMouseScroll(yoffset);
 }

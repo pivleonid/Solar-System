@@ -1,0 +1,71 @@
+﻿  main.cpp
+d:\project\openglfiles\project_vs\tutorial1.2\tutorial1.2\Shader.h(67): warning C4101: 'infoLog': unreferenced local variable
+d:\project\openglfiles\project_vs\tutorial1.2\tutorial1.2\Shader.h(66): warning C4101: 'success': unreferenced local variable
+d:\project\openglfiles\project_vs\tutorial1.2\tutorial1.2\Mesh.h(90): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+main.cpp(164): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(165): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(166): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(167): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(168): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(169): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(170): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(171): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(174): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(326): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(383): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(384): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(388): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(389): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(391): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(392): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(401): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+main.obj : error LNK2001: unresolved external symbol glfwSwapBuffers
+main.obj : error LNK2001: unresolved external symbol __glewEnableVertexAttribArray
+main.obj : error LNK2001: unresolved external symbol __glewBindVertexArray
+main.obj : error LNK2001: unresolved external symbol __glewUseProgram
+main.obj : error LNK2001: unresolved external symbol glfwSetFramebufferSizeCallback
+main.obj : error LNK2001: unresolved external symbol __glewVertexAttribPointer
+main.obj : error LNK2001: unresolved external symbol __glewGetShaderiv
+main.obj : error LNK2001: unresolved external symbol __glewCompileShader
+main.obj : error LNK2001: unresolved external symbol aiGetMaterialTextureCount
+main.obj : error LNK2001: unresolved external symbol __glewCreateShader
+main.obj : error LNK2001: unresolved external symbol __glewBindBuffer
+main.obj : error LNK2001: unresolved external symbol glfwGetTime
+main.obj : error LNK2001: unresolved external symbol __glewCreateProgram
+main.obj : error LNK2001: unresolved external symbol __glewUniform1i
+main.obj : error LNK2001: unresolved external symbol glfwGetKey
+main.obj : error LNK2001: unresolved external symbol __glewGetShaderInfoLog
+main.obj : error LNK2001: unresolved external symbol __glewGetProgramiv
+main.obj : error LNK2001: unresolved external symbol glfwTerminate
+main.obj : error LNK2001: unresolved external symbol SOIL_free_image_data
+main.obj : error LNK2001: unresolved external symbol glfwPollEvents
+main.obj : error LNK2001: unresolved external symbol glfwInit
+main.obj : error LNK2001: unresolved external symbol SOIL_load_image
+main.obj : error LNK2001: unresolved external symbol glfwSetWindowShouldClose
+main.obj : error LNK2001: unresolved external symbol glfwSetScrollCallback
+main.obj : error LNK2001: unresolved external symbol glfwCreateWindow
+main.obj : error LNK2001: unresolved external symbol glfwWindowHint
+main.obj : error LNK2001: unresolved external symbol __glewGetUniformLocation
+main.obj : error LNK2001: unresolved external symbol glfwSetInputMode
+main.obj : error LNK2001: unresolved external symbol glfwMakeContextCurrent
+main.obj : error LNK2001: unresolved external symbol __glewBufferData
+main.obj : error LNK2001: unresolved external symbol __glewAttachShader
+main.obj : error LNK2001: unresolved external symbol __glewActiveTexture
+main.obj : error LNK2001: unresolved external symbol __glewShaderSource
+main.obj : error LNK2001: unresolved external symbol __glewGenVertexArrays
+main.obj : error LNK2001: unresolved external symbol __glewUniformMatrix4fv
+main.obj : error LNK2001: unresolved external symbol "public: char const * __cdecl Assimp::Importer::GetErrorString(void)const " (?GetErrorString@Importer@Assimp@@QEBAPEBDXZ)
+main.obj : error LNK2001: unresolved external symbol "public: struct aiScene const * __cdecl Assimp::Importer::ReadFile(char const *,unsigned int)" (?ReadFile@Importer@Assimp@@QEAAPEBUaiScene@@PEBDI@Z)
+main.obj : error LNK2001: unresolved external symbol "public: __cdecl Assimp::Importer::~Importer(void)" (??1Importer@Assimp@@QEAA@XZ)
+main.obj : error LNK2001: unresolved external symbol "public: __cdecl Assimp::Importer::Importer(void)" (??0Importer@Assimp@@QEAA@XZ)
+main.obj : error LNK2001: unresolved external symbol aiGetMaterialTexture
+main.obj : error LNK2001: unresolved external symbol glewExperimental
+main.obj : error LNK2001: unresolved external symbol glfwSetCursorPosCallback
+main.obj : error LNK2001: unresolved external symbol __glewGetProgramInfoLog
+main.obj : error LNK2001: unresolved external symbol __glewGenBuffers
+main.obj : error LNK2001: unresolved external symbol __glewGenerateMipmap
+main.obj : error LNK2001: unresolved external symbol __glewDeleteShader
+main.obj : error LNK2001: unresolved external symbol __glewLinkProgram
+main.obj : error LNK2001: unresolved external symbol glfwWindowShouldClose
+main.obj : error LNK2001: unresolved external symbol glewInit
+D:\project\OpenglFiles\project_vs\tutorial1.2\x64\Release\tutorial1.2.exe : fatal error LNK1120: 49 unresolved externals
