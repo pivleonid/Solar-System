@@ -140,6 +140,7 @@ int main()
 	Model modelSaturn(path + "/model/saturn/saturn.obj");
 	Model modelYran(path + "/model/yran/yran.obj");
 	Model modelNeptun(path + "/model/neptun/neptun.obj");
+	Model modelMoon(path + "/model/moon/moon.obj");
 
 
 	// draw in wireframe
@@ -156,6 +157,7 @@ int main()
 	float timeSaturn = 0;
 	float timeYran = 0;
 	float timeNeptun = 0;
+	float timeMoon = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -181,7 +183,7 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.00f, 0.00f, 0.00f, 1.0f);
+		glClearColor(0.00f, 0.00f, 0.00f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// don't forget to enable shader before setting uniforms
@@ -259,6 +261,20 @@ int main()
 		terra = glm::rotate(terra, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
 		shaderPlanets.setMat4("model", terra);
 		modelTerra.Draw(shaderPlanets);
+		//Moon
+		shaderPlanets.setMat4("projection", projection);
+		shaderPlanets.setMat4("view", view);
+		glm::mat4 moon;
+		float a = x + 40 * cos(time);
+		float b = y + 40 * sin(time);
+		time = time + timeTerra + 0.01;
+		  a = x + 40 * cos(time);
+		  b = y + 40 * sin(time);
+		time = time - timeTerra - 0.01;
+		moon = glm::translate(moon, glm::vec3(a, b, 0.0f)); // translate it down so it's at the center of the scene
+		moon = glm::rotate(moon, (GLfloat)glfwGetTime()* 0.5f, glm::vec3(0.0, 0.0, 1.0));
+		shaderPlanets.setMat4("model", moon);
+		modelMoon.Draw(shaderPlanets);
 		
 		
 		
